@@ -1,0 +1,31 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./app",
+        "declaration": false,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "lib": [
+            "es6",
+            "dom"
+        ],
+        "mapRoot": "./",
+        "module": "es6",
+        "target": "es5",
+        "moduleResolution": "node",
+        "outDir": "../dist/out-tsc",
+        "sourceMap": true,
+        "typeRoots": [
+            "../node_modules/@types"
+        ],
+        "include": [
+            "src/**/*"
+        ],
+        "exclude": [
+            "node_modules",
+            "**/*.spec.ts"
+        ]
+    },
+    "angularCompilerOptions": {
+        "entryModule": "./app/app.module#AppModule"
+    }
+}

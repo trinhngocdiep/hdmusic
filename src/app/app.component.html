@@ -1,0 +1,43 @@
+<main>
+    <!--search box-->
+    <div class="search">
+        <div class="input-container">
+            <input [class.filled]="query" #searchInput type="text" [(ngModel)]="query" (ngModelChange)="onQueryChange()" (keyup.enter)="search(query)">
+            <label>Find your music</label>
+            <svg width="300%" height="100%" viewBox="0 0 1200 60" preserveAspectRatio="none">
+                <path d="M0,56.5c0,0,298.666,0,399.333,0C448.336,56.5,513.994,46,597,46c77.327,0,135,10.5,200.999,10.5c95.996,0,402.001,0,402.001,0"></path>
+            </svg>
+            <span class="clear fa fa-times-circle-o" *ngIf="query" (click)="clear()"></span>
+        </div>
+        <div class="suggestions" *ngIf="showSuggestions">
+            <div class="suggestion" *ngFor="let e of suggestions" (click)="search(e)">{{e}}</div>
+        </div>
+    </div>
+
+    <!--track list-->
+    <div #trackList class="track-list" (scroll)="onScroll($event)">
+        <div class="track" title="Play this song" [class.playing]="track.playing" *ngFor="let track of tracks" (click)="play(track)">
+            <div class="artwork">
+                <img [src]="track.artwork_url || 'https://i1.sndcdn.com/artworks-000135613276-kkqr5r-large.jpg'">
+            </div>
+            <div class="title" [title]="track.title">{{track.title}}</div>
+            <div class="duration">{{track.durationInMins}}</div>
+        </div>
+        <div class="loading" [class.show]="isLoadingMoreTracks">
+            <span class="fa fa-spinner fa-pulse"></span>
+            <span>Slow down, motherfucker...</span>
+        </div>
+    </div>
+
+    <!--the player-->
+    <div class="player">
+        <div class="controls">
+            <div class="title full">
+                <div class="dancing" [title]="playingTrack?.title">{{playingTrack?.title}}</div>
+            </div>
+            <span class="fa fa-play-circle" *ngIf="player?.paused" (click)="resumeTrack()"></span>
+            <span class="fa fa-pause-circle" *ngIf="!player?.paused" (click)="pauseTrack()"></span>
+            <progress #progress (click)="onProgressClick($event)"></progress>
+        </div>
+    </div>
+</main>

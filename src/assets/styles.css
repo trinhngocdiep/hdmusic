@@ -1,0 +1,270 @@
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+main {
+    width: 500px;
+    margin: 0 auto;
+    padding: 5px;
+    background-color: mediumseagreen;
+}
+
+/*Search*/
+.input-container {
+    position: relative;
+    overflow: hidden;
+    padding-top: 1.2em;
+    background: none;
+}
+.input-container input {
+    padding: 3px 5px;
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 1.2em;
+    box-sizing: border-box;
+    background: none;
+}
+.input-container label {
+    position: absolute;
+    top: 1.5em;
+    left: 5px;
+    display: inline-block;
+    width: 100%;
+    user-select: none;
+    pointer-events: none;
+    transform-origin: 0 0;
+    transition: transform 0.2s 0.15s, color 1s;
+    transition-timing-function: ease-out;
+}
+.input-container svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    fill: none;
+    stroke: darkgreen;
+    pointer-events: none;
+    transition: transform 0.7s, stroke 0.7s;
+    transition-timing-function: cubic-bezier(0, 0.25, 0.5, 1);
+}
+.input-container input:focus + label,
+.input-container input.filled + label
+{
+    color: #333;
+    transform: translate3d(0, -1.25em, 0) scale3d(0.75, 0.75, 1);
+}
+.input-container input:focus ~ svg {
+    stroke: green;
+    transform: translate3d(-66.6%, 0, 0);
+}
+
+.input-container .clear {
+    position: absolute;
+    bottom: 5px;
+    right: 7px;
+    cursor: pointer;
+    font-size: 22px;
+    color: green;
+}
+
+.search {
+    margin: 10px 0;
+    position: relative;
+}
+
+.suggestions {
+    position: absolute;
+    z-index: 1050;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    overflow: auto;
+    margin-top: 3px;
+    background: mediumseagreen;
+    border: 1px solid darkgreen;
+    border-top: transparent;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    padding: 0.5em 0;
+}
+
+.suggestion {
+    padding: 4px 24px 4px 10px;
+}
+.suggestion:hover {
+    background-color: lightgreen;
+}
+
+/*track list*/
+.track-list {
+    height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    border-bottom: 1px solid green;
+}
+
+.track {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+    border: 1px solid green;
+    border-left: none;
+    border-right: none;
+    height: 52px;
+    cursor: pointer;
+    position: relative;
+}
+.track:hover:after {
+    content: "";
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.2);
+}
+.artwork {
+    position: relative;
+    width: 50px;
+    height: 50px;
+}
+
+.artwork img {
+    width: 50px;
+}
+
+.artwork .controls {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    width: 100%;
+    transition: all 0.5s;
+}
+
+.artwork .controls .icon {
+    width: 25px;
+    margin: 12px auto;
+    cursor: pointer;
+}
+
+.artwork .controls .icon:hover {
+    filter: brightness(0.85);
+}
+
+.track:hover .controls,
+.track.playing .controls {
+    opacity: 1;
+}
+
+.title {
+    padding: 0 10px;
+    width: 22em;
+    flex-grow: 1;
+    font-size: 0.9em;
+    font-style: italic;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.duration {
+    padding: 0 10px;
+    width: 5em;
+    text-align: right;
+}
+
+.loading {
+    display: none;
+    text-align: center;
+    position: relative;
+    top: -20px;
+    color: white;
+}
+
+.show {
+    display: block !important;
+}
+
+.full {
+    width: 100%;
+}
+
+/*Player*/
+.player .controls {
+    position: relative;
+    padding-left: 50px;
+    height: 50px;
+    margin: 5px;
+}
+.player .controls .title {
+    position: absolute;
+    left: 50px;
+    top: 7px;
+}
+.player .controls .fa {
+    cursor: pointer;
+    font-size: 45px;
+    position: absolute;
+    left: 0;
+    top: 5px;
+}
+.player .controls progress {
+    position: absolute;
+    top: 30px;
+    right: 0;
+    left: 50px;
+    width: initial;
+    cursor: pointer;
+}
+
+.dancing {
+    animation: dancing 10s infinite;
+}
+
+@keyframes dancing {
+    0% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(-20%);
+    }
+    75% {
+        transform: translateX(20%);
+    }
+    100% {
+        transform: translateX(0%);
+    }
+}
+
+/** Progress bar styling **/
+progress {
+    display: block;
+    -webkit-appearance: none;
+    border: none;
+}
+
+progress::-webkit-progress-bar {
+    background: black;
+    border-radius: 50px;
+    padding: 2px;
+    box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.2);
+}
+progress::-webkit-progress-value {
+    border-radius: 50px;
+    box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
+    background: darkgreen;
+    background-size: 25px 14px, 100% 100%, 100% 100%;
+    animation: move 5s linear infinite;
+}
+@-webkit-keyframes move {
+    0% {background-position: 0 0, 0 0, 0 0}
+    100% {background-position: -100px 0, 0 0, 0 0}
+}
