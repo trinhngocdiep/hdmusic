@@ -2,12 +2,10 @@
     <!--search box-->
     <div class="search">
         <div class="input-container">
-            <input [class.filled]="query" #searchInput type="text" [(ngModel)]="query" (ngModelChange)="onQueryChange()" (keyup.enter)="search(query)">
+            <input [class.filled]="state.query" #searchInput type="text" [(ngModel)]="state.query" (ngModelChange)="onQueryChange()" (keyup.enter)="search(state.query)">
             <label>Find your music</label>
-            <svg width="300%" height="100%" viewBox="0 0 1200 60" preserveAspectRatio="none">
-                <path d="M0,56.5c0,0,298.666,0,399.333,0C448.336,56.5,513.994,46,597,46c77.327,0,135,10.5,200.999,10.5c95.996,0,402.001,0,402.001,0"></path>
-            </svg>
-            <span class="clear fa fa-times-circle-o" *ngIf="query" (click)="clear()"></span>
+            <span class="clear fa fa-times-circle-o" *ngIf="state.query" (click)="clear()"></span>
+            <span class="clear fa fa-times-circle-o" *ngIf="state.query" (click)="clear()"></span>
         </div>
         <div class="suggestions" *ngIf="showSuggestions">
             <div class="suggestion" *ngFor="let e of suggestions" (click)="search(e)">{{e}}</div>
@@ -16,11 +14,11 @@
 
     <!--track list-->
     <div #trackList class="track-list" (scroll)="onScroll($event)">
-        <div class="track" title="Play this song" [class.playing]="track.playing" *ngFor="let track of tracks" (click)="play(track)">
+        <div class="track" [class.playing]="track.playing" *ngFor="let track of state.tracks" (click)="play(track)" [title]="track.title">
             <div class="artwork">
                 <img [src]="track.artwork_url || 'https://i1.sndcdn.com/artworks-000135613276-kkqr5r-large.jpg'">
             </div>
-            <div class="title" [title]="track.title">{{track.title}}</div>
+            <div class="title">{{track.title}}</div>
             <div class="duration">{{track.durationInMins}}</div>
         </div>
         <div class="loading" [class.show]="isLoadingMoreTracks">
@@ -30,14 +28,32 @@
     </div>
 
     <!--the player-->
-    <div class="player">
+    <!--<div class="player" [class.show]="state.currentTrack">
         <div class="controls">
             <div class="title full">
-                <div class="dancing" [title]="playingTrack?.title">{{playingTrack?.title}}</div>
+                <div class="dancing" [title]="state.currentTrack?.title">{{state.currentTrack?.title}}</div>
             </div>
-            <span class="fa fa-play-circle" *ngIf="player?.paused" (click)="resumeTrack()"></span>
-            <span class="fa fa-pause-circle" *ngIf="!player?.paused" (click)="pauseTrack()"></span>
+            <span class="fa fa-play-circle" *ngIf="!player.playing" (click)="player.resume()"></span>
+            <span class="fa fa-pause-circle" *ngIf="player.playing" (click)="player.pause()"></span>
             <progress #progress (click)="onProgressClick($event)"></progress>
+        </div>
+    </div>-->
+
+    <div class="player-wrapper" [class.show]="state.currentTrack">
+        <div class="player">
+            <div class="title">
+                <div class="dancing" [title]="state.currentTrack?.title">{{state.currentTrack?.title}}</div>
+            </div>
+            <div class="controls">
+                <span class="fa fa-step-backward" (click)="player.previous()"></span>
+                <span class="fa fa-play" *ngIf="!player.playing" (click)="player.resume()"></span>
+                <span class="fa fa-pause" *ngIf="player.playing" (click)="player.pause()"></span>
+                <span class="fa fa-step-forward" (click)="player.next()"></span>
+            </div>
+            <progress #progress class="progress" (click)="onProgressClick($event)"></progress>
+            <div class="volume">
+                <input type="range" min="0" max="1" step="0.01" [(ngModel)]="state.volume" (ngModelChange)="player.setVolume(state.volume)">
+            </div>
         </div>
     </div>
 </main>

@@ -5,7 +5,8 @@
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
-        "build": "ng build --output-path=bundle"
+        "build": "ng build --output-path=bundle",
+        "build-prod": "ng build --prod --output-path=bundle"
     },
     "private": true,
     "dependencies": {

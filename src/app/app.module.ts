@@ -7,7 +7,6 @@ import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { ApiService } from './services/api.service';
-import { DataService } from './services/data.service';
 
 @NgModule({
     declarations: [
@@ -22,8 +21,7 @@ import { DataService } from './services/data.service';
         JsonpModule
     ],
     providers: [
-        ApiService,
-        DataService
+        ApiService
     ],
     bootstrap: [AppComponent]
 })
