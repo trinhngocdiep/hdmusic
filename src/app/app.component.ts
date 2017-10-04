@@ -85,6 +85,11 @@ export class AppComponent {
         this.searchInput.nativeElement.focus();
     }
 
+    cancelSearch() {
+        this.showSuggestions = false;
+        this.searchInput.nativeElement.blur();
+    }
+
     search(query) {
         this.showSuggestions = false;
         this.state.query = query;

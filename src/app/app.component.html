@@ -2,7 +2,8 @@
     <!--search box-->
     <div class="search">
         <div class="input-container">
-            <input [class.filled]="state.query" #searchInput type="text" [(ngModel)]="state.query" (ngModelChange)="onQueryChange()" (keyup.enter)="search(state.query)">
+            <input [class.filled]="state.query" #searchInput type="text" [(ngModel)]="state.query" (ngModelChange)="onQueryChange()"
+                   (keyup.enter)="search(state.query)" (keyup.esc)="cancelSearch()">
             <label>Find your music</label>
             <span class="clear fa fa-times-circle-o" *ngIf="state.query" (click)="clear()"></span>
             <span class="clear fa fa-times-circle-o" *ngIf="state.query" (click)="clear()"></span>
@@ -28,17 +29,6 @@
     </div>
 
     <!--the player-->
-    <!--<div class="player" [class.show]="state.currentTrack">
-        <div class="controls">
-            <div class="title full">
-                <div class="dancing" [title]="state.currentTrack?.title">{{state.currentTrack?.title}}</div>
-            </div>
-            <span class="fa fa-play-circle" *ngIf="!player.playing" (click)="player.resume()"></span>
-            <span class="fa fa-pause-circle" *ngIf="player.playing" (click)="player.pause()"></span>
-            <progress #progress (click)="onProgressClick($event)"></progress>
-        </div>
-    </div>-->
-
     <div class="player-wrapper" [class.show]="state.currentTrack">
         <div class="player">
             <div class="title">
