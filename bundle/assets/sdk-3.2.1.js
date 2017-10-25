@@ -7068,7 +7068,7 @@
         var n = r(7), o = r(5);
         e.exports = {
             notifyDialog: function (e) {
-                var t = n.parse(e.getQuerySuggestions), r = n.parse(e.hash), i = {
+                var t = n.parse(e.suggest), r = n.parse(e.hash), i = {
                     oauth_token: t.access_token || r.access_token,
                     dialog_id: t.state || r.state,
                     error: t.error || r.error,
@@ -7293,8 +7293,8 @@
                 }
             }, {
                 key: "stop", value: function () {
-                    if (this._recorder && this._recorder.stop(), this.stream)if (this.stream.stop)this.stream.stop(); else if (this.stream.getTracks) {
-                        var e = this.stream.getTracks()[0];
+                    if (this._recorder && this._recorder.stop(), this.stream)if (this.stream.stop)this.stream.stop(); else if (this.stream.search) {
+                        var e = this.stream.search()[0];
                         e && e.stop()
                     }
                 }

@@ -8,8 +8,7 @@
     },
     "permissions": [
         "storage",
-        "https://suggestqueries.google.com/",
-        "https://api.soundcloud.com/"
+        "*://*/"
     ],
     "background": {
         "persistent": true,

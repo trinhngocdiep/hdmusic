@@ -2,29 +2,48 @@
     <!--search box-->
     <div class="search">
         <div class="input-container">
-            <input [class.filled]="state.query" #searchInput type="text" [(ngModel)]="state.query" (ngModelChange)="onQueryChange()"
-                   (keyup.enter)="search(state.query)" (keyup.esc)="cancelSearch()">
-            <label>Find your music</label>
-            <span class="clear fa fa-times-circle-o" *ngIf="state.query" (click)="clear()"></span>
-            <span class="clear fa fa-times-circle-o" *ngIf="state.query" (click)="clear()"></span>
+            <input [class.filled]="state.query.term" #searchInput type="text" [(ngModel)]="state.query.term" (ngModelChange)="onQueryChange()"
+                   (keyup.enter)="search(state.query.term)" (keyup.esc)="cancelSearch()">
+            <label>Find your music here</label>
+            <span class="clear fa fa-times-circle-o" *ngIf="state.query.term" (click)="clear()"></span>
+            <span class="clear fa fa-times-circle-o" *ngIf="state.query.term" (click)="clear()"></span>
         </div>
         <div class="suggestions" *ngIf="showSuggestions">
             <div class="suggestion" *ngFor="let e of suggestions" (click)="search(e)">{{e}}</div>
+        </div>
+        <div class="checkbox">
+            <input id="check-sc" type="checkbox" [(ngModel)]="state.query.sc" />
+            <label for="check-sc"><span>SoundCloud</span></label>
+        </div>
+        <div class="checkbox">
+            <input id="check-yt" type="checkbox" [(ngModel)]="state.query.yt" />
+            <label for="check-yt"><span>YouTube</span></label>
         </div>
     </div>
 
     <!--track list-->
     <div #trackList class="track-list" (scroll)="onScroll($event)">
-        <div class="track" [class.playing]="track.playing" *ngFor="let track of state.tracks" (click)="play(track)" [title]="track.title">
+        <div class="track" [title]="track.title" [class.playing]="track.playing" [class.error]="track.error" *ngFor="let track of state.tracks" (click)="play(track)">
             <div class="artwork">
-                <img [src]="track.artwork_url || 'https://i1.sndcdn.com/artworks-000135613276-kkqr5r-large.jpg'">
+                <img [src]="track.artwork_url || 'https://i1.sndcdn.com/artworks-000073554908-d2qdlh-large.jpg'">
             </div>
             <div class="title">{{track.title}}</div>
-            <div class="duration">{{track.durationInMins}}</div>
+            <div class="duration">{{track.durationInMinutes}}</div>
         </div>
-        <div class="loading" [class.show]="isLoadingMoreTracks">
+        <div class="loading" *ngIf="isLoadingMoreTracks">
             <span class="fa fa-spinner fa-pulse"></span>
             <span>Slow down, motherfucker...</span>
+        </div>
+
+        <!--recent searches-->
+        <div class="recent-search" *ngIf="!searching && !state.tracks?.length">
+            <span class="message">I could not find anything for your stupid query!</span>
+        </div>
+    </div>
+    <!--tracklist overlay-->
+    <div class="track-list-overlay" *ngIf="searching">
+        <div class="loading">
+            <span class="fa fa-spinner fa-pulse"></span>
         </div>
     </div>
 

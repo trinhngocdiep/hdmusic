@@ -7,8 +7,6 @@ declare var background;
 
 import { ApiService } from './services/api.service';
 
-const LIMIT = 10;
-
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html'
@@ -29,8 +27,10 @@ export class AppComponent {
     suggestions = [];
     showSuggestions: boolean;
     isLoadingMoreTracks: boolean;
+    searching: boolean;
+    scEnable = true;
+    ytEnable = true;
 
-    private offset: number = 0;
     private queries = new Subject<string>();
 
     ngOnInit() {
@@ -45,30 +45,44 @@ export class AppComponent {
         this.player = backgroundScript.player;
         this.player.onPlay = () => {
             this.ngZone.run(() => {
-                console.log('onPlay');
                 this.player.playing = true;
             })
         };
         this.player.onPause = () => {
             this.ngZone.run(() => {
-                console.log('onPause');
                 this.player.playing = false;
             })
         };
         this.player.onProgress = (track, currentTime) => {
             // update progress bar's max and initial value
-            this.progress.nativeElement.max = track.duration / 1000;
+            this.progress.nativeElement.max = track.durationInSeconds;
             this.progress.nativeElement.value = currentTime;
         };
 
+        // suggest for search
         // query will be delayed for 0.5s until user finished typing.
         this.queries.debounceTime(500).distinctUntilChanged()
-            .subscribe(query => {
-                this.apiService.getQuerySuggestions(query).subscribe(data => {
-                    this.suggestions = data;
-                    this.showSuggestions = true;
+            .subscribe(term => {
+                this.apiService.suggest(term).subscribe(data => {
+                    if (data && data.length > 0) {
+                        this.suggestions = data;
+                        this.showSuggestions = true;
+                    }
                 });
             });
+
+        // load top tracks if no previous tracks found
+        if (!this.state.tracks || this.state.tracks.length == 0) {
+            this.state.offset = null;
+            this.state.isTopTracks = true;
+            this.searching = true;
+            this.apiService.getTopTracks(this.state.offset)
+                .finally(() => this.searching = false)
+                .subscribe(data => {
+                    this.state.offset = data.offset;
+                    this.state.tracks = data.tracks;
+                });
+        }
     }
 
     ngAfterViewInit() {
@@ -76,11 +90,11 @@ export class AppComponent {
     }
 
     onQueryChange() {
-        this.queries.next(this.state.query);
+        this.queries.next(this.state.query.term);
     }
 
     clear() {
-        this.state.query = '';
+        this.state.query.term = '';
         this.showSuggestions = false;
         this.searchInput.nativeElement.focus();
     }
@@ -90,14 +104,18 @@ export class AppComponent {
         this.searchInput.nativeElement.blur();
     }
 
-    search(query) {
+    search(term) {
         this.showSuggestions = false;
-        this.state.query = query;
-        this.offset = 0;
-        this.apiService.getTracks(query, LIMIT, 0).subscribe(data => {
-            this.state.tracks = AppComponent.processTrackData(data);
-        });
-        this.state.query = query;
+        this.state.query.term = term;
+        this.state.offset = null;
+        this.state.isTopTracks = false;
+        this.searching = true;
+        this.apiService.search(this.state.query, this.state.offset)
+            .finally(() => this.searching = false)
+            .subscribe(data => {
+                this.state.offset = data.offset;
+                this.state.tracks = data.tracks;
+            });
     }
 
     onScroll($event) {
@@ -108,13 +126,12 @@ export class AppComponent {
                 // prevent too many requests
                 return;
             }
-            this.offset = this.offset + LIMIT;
             this.isLoadingMoreTracks = true;
-            this.apiService.getTracks(this.state.query, LIMIT, this.offset).subscribe(data => {
+            let apiCall = this.state.isTopTracks ? this.apiService.getTopTracks(this.state.offset) : this.apiService.search(this.state.query, this.state.offset);
+            apiCall.subscribe(data => {
                 this.isLoadingMoreTracks = false;
-                if (data && data.length > 0) {
-                    Array.prototype.push.apply(this.state.tracks, AppComponent.processTrackData(data));
-                }
+                this.state.offset = data.offset;
+                Array.prototype.push.apply(this.state.tracks, data.tracks);
             });
         }
     }
@@ -136,16 +153,6 @@ export class AppComponent {
         let xPosition = e.pageX - progressBar.getBoundingClientRect().left;
         let time = xPosition / progressBar.clientWidth * progressBar.max;
         this.player.seek(time);
-    }
-
-    private static processTrackData(data) {
-        return data.filter(e => e.streamable).map(track => {
-            let durationInSeconds = track.duration / 1000;
-            let mins = Math.floor(durationInSeconds/60);
-            let secs = Math.floor(durationInSeconds - mins*60);
-            track.durationInMins = mins + ':' + secs;
-            return track;
-        });
     }
 
 }
