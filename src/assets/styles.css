@@ -82,7 +82,8 @@ main {
     padding: 3px 6px;
     cursor: pointer;
 }
-.suggestion:hover {
+.suggestion:hover,
+.suggestion.active {
     background-color: rgba(0,0,0,.1);
 }
 

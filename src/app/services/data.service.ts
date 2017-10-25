@@ -33,8 +33,3 @@ export class DataService {
     }
 
 }
-
-export class Session {
-    query = null;
-    playingTrack = null;
-}

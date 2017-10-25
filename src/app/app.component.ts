@@ -6,6 +6,7 @@ declare var chrome;
 declare var background;
 
 import { ApiService } from './services/api.service';
+import { DataService } from './services/data.service';
 
 @Component({
     selector: 'app-root',
@@ -15,6 +16,7 @@ export class AppComponent {
 
     constructor(
         private ngZone: NgZone,
+        public dataService: DataService,
         public apiService: ApiService
     ){}
 
@@ -63,9 +65,19 @@ export class AppComponent {
         // query will be delayed for 0.5s until user finished typing.
         this.queries.debounceTime(500).distinctUntilChanged()
             .subscribe(term => {
+                // stop suggestion if user already pressed "Enter" to search
+                if (this.searching) {
+                    return;
+                }
+                this.suggestions = [];
+                this.showSuggestions = false;
                 this.apiService.suggest(term).subscribe(data => {
                     if (data && data.length > 0) {
-                        this.suggestions = data;
+                        this.suggestions = data.map(e => {
+                            return {
+                                value: e
+                            }
+                        });
                         this.showSuggestions = true;
                     }
                 });
@@ -83,6 +95,15 @@ export class AppComponent {
                     this.state.tracks = data.tracks;
                 });
         }
+
+        // try loading state from local storage
+        //if (!state || !state.tracks || !state.tracks.length) {
+        //    this.dataService.getData((data) => {
+        //        if (data) {
+        //            this.state = data;
+        //        }
+        //    });
+        //}
     }
 
     ngAfterViewInit() {
@@ -91,6 +112,56 @@ export class AppComponent {
 
     onQueryChange() {
         this.queries.next(this.state.query.term);
+    }
+
+    onSearchBlur() {
+        setTimeout(() => {
+            this.showSuggestions = false;
+        }, 300);
+    }
+
+    onSearchEnter() {
+        let selectedSuggestion = this.suggestions.find(e => e.active);
+        if (selectedSuggestion){
+            this.state.query.term = selectedSuggestion.value;
+        }
+        this.search(this.state.query.term);
+    }
+
+    onArrowDown($event) {
+        if (this.suggestions && this.suggestions.length > 0) {
+            let currentIndex = this.suggestions.findIndex((e) => e.active);
+            if (currentIndex >= 0) {
+                this.suggestions[currentIndex].active = false;
+            }
+            let nextIndex = currentIndex + 1;
+            if (nextIndex >= this.suggestions.length) {
+                nextIndex = 0;
+            }
+            this.suggestions[nextIndex].active = true;
+
+            $event.stopPropagation();
+        }
+    }
+
+    onArrowUp($event) {
+        if (this.suggestions && this.suggestions.length > 0) {
+            let currentIndex = this.suggestions.findIndex((e) => e.active);
+            if (currentIndex >= 0) {
+                this.suggestions[currentIndex].active = false;
+            }
+            let prevIndex = currentIndex - 1;
+            if (prevIndex < 0) {
+                prevIndex = this.suggestions.length - 1;
+            }
+            this.suggestions[prevIndex].active = true;
+
+            $event.stopPropagation();
+        }
+    }
+
+    removeSelectedSuggestion() {
+        this.suggestions.forEach(e => e.active = false);
     }
 
     clear() {
