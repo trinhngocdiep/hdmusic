@@ -8,7 +8,7 @@
         tracks: [],
         currentTrack: null,
         offset: null,
-        volume: 0.8
+        volume: 1
     };
     let player = {
         play: play,
@@ -213,7 +213,11 @@ YtPlayer.prototype.seek = function(time) {
     this.player.initiated && this.player.seekTo(time, true);
 };
 YtPlayer.prototype.setVolume = function(volume) {
-    this.player.initiated && this.player.setVolume(volume * 100);
+    if (this.player.initiated) {
+        // set volume does not unmute the video. WTF!
+        this.player.unMute();
+        this.player.setVolume(volume * 100)
+    }
 };
 YtPlayer.prototype.updateProgress = function() {
     if (YT.PlayerState.PLAYING == this.player.getPlayerState()) {
