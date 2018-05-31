@@ -5,8 +5,7 @@ Small yet powerful music player for your Chrome browser.
 TBC
 
 ## Use it
-Download the [bundle](bundle) to your machine.
-Load the bundle into chrome
+Download the [bundle](bundle) to your machine and load it into Chrome.
 ![install](https://i.stack.imgur.com/RVd1Y.png)
 
 ## Customize it
